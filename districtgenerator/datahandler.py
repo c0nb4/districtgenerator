@@ -460,7 +460,8 @@ class Datahandler():
 
 
 
-    def generateDemands(self, calcUserProfiles:bool=True, saveUserProfiles:bool=True, savePath:str =None):
+    def generateDemands(self, calcUserProfiles:bool=True,
+                        saveUserProfiles:bool=True, savePath:str =None):
         """
         Generate occupancy profile, heat demand, domestic hot water demand and heating demand
 
@@ -511,17 +512,14 @@ class Datahandler():
             # calculate or 
             # load user profiles
             if calcUserProfiles:
+                print("Calculate profiles of building " + building["unique_name"])
                 building["user"].calcProfiles(site=self.site,
                                               time_horizon=self.time["dataLength"],
                                               time_resolution=self.time["timeResolution"])
                 if saveUserProfiles:
-                    if savePath is not None:
-                        savePath = os.path.join(self.resultPath, 'results', 'demands', savePath)
-                        building["user"].saveProfiles(building["unique_name"], savePath)
-                    else: 
-                        building["user"].saveProfiles(building["unique_name"], self.resultPath)
-
-                print("Calculate demands of building " + building["unique_name"])
+                    building["user"].saveProfiles(building["unique_name"], os.path.join(self.resultPath, 'demands'))
+                
+        
 
             else:
                 # To Do -> implement loading of user profiles
@@ -536,13 +534,7 @@ class Datahandler():
                                                 time_resolution=self.time["timeResolution"])
 
             if saveUserProfiles :
-                if savePath is not None:
-                    savePath = os.path.join(self.resultPath, savePath)
-                    building["user"].saveProfiles(building["unique_name"], savePath)
-                    print(f"Save heating profile of building {building['unique_name']} in {savePath}")
-                else:
-                    building["user"].saveProfiles(building["unique_name"], self.resultPath)
-                    print(f"Save heating profile of building {building['unique_name']} in {savePath}")
+                building["user"].saveHeatingProfile(building["unique_name"], os.path.join(self.resultPath, 'demands'))
 
         print("Finished generating demands!")
 

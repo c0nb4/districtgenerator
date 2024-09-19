@@ -597,7 +597,6 @@ class NonResidentialProfiles():
         res = np.reshape(res, res.size)
         self.light_load = np.reshape(self.light_load, self.light_load.size)
         self.app_load = np.reshape(self.app_load, self.app_load.size)
-        breakpoint()
         # Change time resolution to timestep defined by user
         loadcurve = cr.change_resolution(res, _timestep_rich, self.time_resolution)
         self.light_load = cr.change_resolution(self.light_load, _timestep_rich,

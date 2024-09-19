@@ -481,9 +481,7 @@ class NonResidentialUsers():
         (Q_HC, T_i, T_s, T_m, T_op) = heating.calculate(envelope, envelope.T_set_max, site["T_e"], dt)
         # Cooling load for the current time step in Watt
         self.cool = np.zeros(len(Q_HC))
-        self.cool = np.minimum(0, Q_HC)
-        self.cool = np.zeros(len(Q_HC))
-        self.cool = np.minimum(0, Q_HC)
+        self.cool = np.minimum(0, Q_HC) *-1
 
             
     def saveProfiles(self,unique_name: str,path: str) -> None:
@@ -505,8 +503,6 @@ class NonResidentialUsers():
             'dhw': self.dhw,
             'occ': self.occ,
             'gains': self.gains,
-            'heat': self.heat,
-            'cool': self.cool  
         })
         data.to_csv(os.path.join(path, f'{unique_name}.csv'), index=False)
 
@@ -534,6 +530,28 @@ class NonResidentialUsers():
         self.occ = np.loadtxt(path + '/occ_' + unique_name + '.csv', delimiter=',')
         self.gains = np.loadtxt(path + '/gains_' + unique_name + '.csv', delimiter=',')
 
+    def saveHeatingProfile(self,unique_name,path) :
+        '''
+        Save heat demand to csv
+
+        Parameters
+        ----------
+        unique_name : string
+            unique building name
+        path : string
+            results path
+        '''
+        data = pd.DataFrame({
+            'heat': [self.heat],
+            'cool': [self.cool]
+        }, index=[0])  # Provide a single-element index
+        if os.path.exists(os.path.join(path, f'{unique_name}.csv')):
+            Temp_data = pd.read_csv(os.path.join(path, f'{unique_name}.csv'), sep=',')
+            Temp_data['heat'] = self.heat
+            Temp_data['cool'] = self.cool
+            Temp_data.to_csv(os.path.join(path, f'{unique_name}.csv'), index=False, sep=',')
+        else:
+            data.to_csv(os.path.join(path, f'{unique_name}.csv'), index=False, sep=',')
 
     
 

@@ -348,7 +348,7 @@ class Users():
         (Q_HC, T_i, T_s, T_m, T_op) = heating.calculate(envelope, envelope.T_set_max, site["T_e"], dt)
         # Cooling load for the current time step in Watt
         self.cool = np.zeros(len(Q_HC))
-        self.cool = np.minimum(0, Q_HC)
+        self.cool = np.minimum(0, Q_HC) *-1
     
 
     def saveProfiles(self,unique_name,path):
@@ -395,18 +395,17 @@ class Users():
             results path
         '''
 
-        np.savetxt(path + '/heat_' + unique_name + '.csv',self.heat,fmt='%1.2f',delimiter=',')
-        if not os.path.exists(path):
-            os.makedirs(path)
-        file_path = path + f'/{unique_name}'+ '.csv'
-        if os.path.exists(file_path):
-            data = pd.read_csv(file_path)
-            data['heat'] = self.heat
+        data = pd.DataFrame({
+            'heat': self.heat,
+            'cool': self.cool
+        })
+        if os.path.exists(os.path.join(path, f'{unique_name}.csv')):
+            Temp_data = pd.read_csv(os.path.join(path, f'{unique_name}.csv'), sep=',')
+            Temp_data['heat'] = self.heat
+            Temp_data['cool'] = self.cool
+            Temp_data.to_csv(os.path.join(path, f'{unique_name}.csv'), index=False, sep=',')
         else:
-            data = pd.DataFrame({
-                'heat': self.heat
-            })
-            data.to_csv(file_path, index=False)
+            data.to_csv(os.path.join(path, f'{unique_name}.csv'), index=False, sep=',')
 
     def loadProfiles(self,unique_name,path):
         '''
