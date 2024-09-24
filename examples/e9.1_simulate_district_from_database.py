@@ -33,10 +33,7 @@ def example9_1simulate_district_from_database():
     data.initializeBuildings('example_mix_used')
     data.generateBuildings()
 
-    # Now Analyze the data that is returned
-    print(vars(data))
-    #data.generateDemands()
-    breakpoint()
+    # To Do Write Tutorial on how to simulate data with django B
     
 
   

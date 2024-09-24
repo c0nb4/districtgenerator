@@ -315,20 +315,16 @@ class NonResidentialUsers():
             Numpy-array with heat demand of dhw consumption in W.
 
         """
-
-        # Run simulation
-        # run the simulation for just x days
-        # therefor occupancy has to have the length of x days
-        # TEK for Water and heat? 
         TEK_dhw, TEK_name = schedules.get_tek(self.usage)  # TEK_dhw in kWh/m2*a
         # Code taken from DIBS and adjusted for
         # style and attributes to fit districtgenerator
         # https://www.iwu.de/fileadmin/publikationen/energie/tektool/2014_IWU_H%C3%B6rnerEtAl_Teilenergiekennwerte%E2%80%93Neue-Wege-in-der-Energieanalyse-von-Nichtwohngeb%C3%A4uden-im-Bestand.pdf
+        # Further data for validation: https://de.wikipedia.org/wiki/%C3%96NORM_B_8110
         if TEK_dhw is not None:
             occupancy_full_usage_hours = self.occupancy_schedule["OCCUPANCY"].sum()  # in h/a
             TEK_dhw_per_Occupancy_Full_Usage_Hour = TEK_dhw / occupancy_full_usage_hours  # in kWh/m2*a / h/a = kW/m2
-        
             self.dhw = self.occupancy_schedule["OCCUPANCY"] * TEK_dhw_per_Occupancy_Full_Usage_Hour * 1000 * self.area 
+            breakpoint()
         else:
             print(f"No data about annual dhw consumption available for building type: {self.usage}. DHW demand is set to zero.")
             self.dhw = np.zeros(len(self.occupancy_schedule))
@@ -566,7 +562,7 @@ if __name__ == '__main__':
         'id' : 0,
         "year": 2000,  # Example year, adjust as needed
         "retrofit": 0,
-        'building' : "IWU Hotels, Boarding, Restaurants or Catering",
+        'building' : "IWU Health and Care",
         'area' : 100
     }
     nrb_prj = NonResidential(
@@ -628,8 +624,25 @@ if __name__ == '__main__':
     test = NonResidentialUsers(building_usage=building_params["building"],
                 area=1000, file="", envelope=envelope, site=site, time=time, nb_of_days=365)
     
+    # Calculate solar irradiance per surface direction - S, W, N, E, Roof represented by angles gamma and beta
+    from districtgenerator.solar import Sun
+    global sun
+    sun = Sun(filePath=r"C:/Users/felix/Programmieren/tecdm/src/districtgenerator/data")
+    SunRad = sun.getSolarGains(initialTime=0,
+                                    timeDiscretization=time["timeResolution"],
+                                    timeSteps=time["timeSteps"],
+                                    timeZone=site["timeZone"],
+                                    location=site["location"],
+                                    altitude=site["altitude"],
+                                    beta=[90, 90, 90, 90, 0],
+                                    gamma=[0, 90, 180, 270, 0],
+                                    beam=site["SunDirect"],
+                                    diffuse=site["SunDiffuse"],
+                                    albedo=site["albedo"])
+
+    
     test.calcProfiles(site=site, time_resolution=time["timeResolution"], time_horizon=time["dataLength"])
 
-    envelope.calcNormativeProperties(SunRad=site["SunTotal"], internal_gains=test.gains)
+    envelope.calcNormativeProperties(SunRad=SunRad, internal_gains=test.gains)
     test.calcHeatingProfile(site=site, envelope=envelope, time_resolution=time["timeResolution"])
 
