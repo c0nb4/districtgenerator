@@ -1,6 +1,9 @@
 import os
 import pandas as pd
 
+current_file_path = os.path.abspath(__file__)
+base_path = os.path.dirname(os.path.dirname(current_file_path))
+
 def getBuildingType(term, kind):
     """
     Retrieve the value from a specified column based on a match in the 'districtgenerator' column.
@@ -12,8 +15,7 @@ def getBuildingType(term, kind):
     Returns:
     str: The value from the specified column if a match is found; otherwise, None.
     """
-    srcPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    building_types_file  = os.path.join(srcPath, 'data', 'building_types.csv')
+    building_types_file  = os.path.join(base_path, 'data', 'building_types.csv')
     df = pd.read_csv(building_types_file, sep=';')
     # Check if the kind column exists
     if kind not in df.columns:
@@ -45,9 +47,8 @@ def getSchedule(building_type):
     if scheduleName is None:
         print(f"No schedule for building type {building_type}")
         return None, None
-
-    dataDirPath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    data_path = os.path.join(dataDirPath, 'data', 'occupancy_schedules', f'{scheduleName}.csv')
+    
+    data_path = os.path.join(base_path, 'data', 'occupancy_schedules', f'{scheduleName}.csv')
 
     try:
         data_schedule = pd.read_csv(data_path, sep=',')
@@ -56,14 +57,27 @@ def getSchedule(building_type):
         print(f"File not found: {data_path}")
         return None, None
 
-def adjust_schedule(inital_day, schedule, nb_days):
+def adjust_schedule(initial_day, schedule, nb_days):
     """
-    Function returns the schedule, 
-    adjusted to the initial_day and the last 
+    Adjusts and expands a schedule based on an initial day and a specified number of days.
+
+    This function performs the following operations:
+    1. Rotates the days of the week to start from the specified initial day.
+    2. Creates a copy of the input schedule to avoid modifying the original.
+    3. Converts the 'DAY' column to a categorical type with the rotated order.
+    4. Sorts the schedule by the new day order and hour.
+    5. Expands the schedule to cover the specified number of days.
+
+    Parameters:
+    initial_day (int): The day of the week to start the schedule (0-6, where 0 is Monday).
+    schedule (pd.DataFrame): The original schedule DataFrame with 'DAY' and 'HOUR' columns.
+    nb_days (int): The total number of days the schedule should cover.
+
+    Returns:
+    pd.DataFrame: An adjusted and expanded copy of the input schedule.
     """
     # Create a custom sorter index
-    sorter = rotate_list(initial_day=inital_day)
-    sorter_index = {day: index for index, day in enumerate(sorter)}
+    sorter = rotate_list(initial_day=initial_day)
 
     # Create a copy of the schedule DataFrame
     schedule_copy = schedule.copy()
@@ -74,15 +88,13 @@ def adjust_schedule(inital_day, schedule, nb_days):
     schedule_copy = expand_dataframe(schedule_copy, total_days=nb_days)
     return schedule_copy
 
-
 def rotate_list(initial_day):
     # Number of days in the schedule
-    lst = [0 , 1, 2, 3, 4, 5, 6]
+    lst = [0, 1, 2, 3, 4, 5, 6]
     # Find the index of the start day
     start_index = lst.index(initial_day)
     # Rotate the list from that index
     return lst[start_index:] + lst[:start_index]
-
 
 def expand_dataframe(df, total_days):
     unique_days = df['DAY'].unique()
@@ -118,8 +130,7 @@ def get_tek(building_type):
         print(f"No schedule for building type {building_type}")
         return None, None
 
-    data_dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    data_path = os.path.join(data_dir_path, 'data', 'TEKs', 'TEK_districtgenerator.csv')
+    data_path = os.path.join(base_path, 'data', 'TEKs', 'TEK_districtgenerator.csv')
 
     try:
         data_schedule = pd.read_csv(data_path, sep=',',)
@@ -162,8 +173,7 @@ def get_multi_zone_average(building_type):
         print(f"No schedule for building type {building_type}")
         return None, None, None
 
-    data_dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    data_path = os.path.join(data_dir_path, 'data', 'multi_zone_average', 
+    data_path = os.path.join(base_path, 'data', 'multi_zone_average', 
                              'Non-domestic-multi-zone-average-usage-profiles-for-Germany.csv')
     
     try:
@@ -194,9 +204,8 @@ def get_lightning_control(building_type):
     if data_type is None:
         print(f"No schedule for building type {building_type}")
         return None, None
-   
-    data_dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    maintenance_data_path = os.path.join(data_dir_path, 'data', 'norm_profiles', '18599_10_4_data.csv')
+
+    maintenance_data_path = os.path.join(base_path, 'data', 'norm_profiles', '18599_10_4_data.csv')
 
 
     try:

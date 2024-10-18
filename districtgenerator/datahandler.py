@@ -18,7 +18,7 @@ import functions.weather_handling as weather_handling
 import functions.path_checks as path_checks
 
 RESIDENTIAL_BUILDING_TYPES = ["SFH", "TH", "MFH", "AB"]
-NON_RESIDENTIAL_BUILDING_TYPES = ["IWU Hotels, Boarding, Restaurants or Catering", "IWU Office, Administrative or Government Buildings", "IWU Technical and Utility",
+NON_RESIDENTIAL_BUILDING_TYPES = ["IWU Hotels, Boarding, Restaurants or Catering", "IWU Office, Administrative or Government Buildings",
                                   "IWU Trade Buildings", "IWU Technical and Utility (supply and disposal)", "IWU School, Day Nursery and other Care", "IWU Transport",
                                   "IWU Health and Care", "IWU Sports Facilities", "IWU Culture and Leisure", "IWU Research and University Teaching", "IWU Technical and Utility (supply and disposal)",
                                   "IWU Generalized (1) Services building", "IWU Generalized (2) Production buildings", "IWU Production, Workshop, Warehouse or Operations"]
@@ -342,7 +342,7 @@ class Datahandler():
         prj.name = self.scenario_name
         print(f"Creating buildings for {self.scenario_name}")
         for building in self.district:
-            print(f"Creating building {building["buildingFeatures"]["building"]}")
+            print(f"Creating building {building['buildingFeatures']['building']}")
             # check if building type is residential or non residential 
             if building["buildingFeatures"]["building"] in  RESIDENTIAL_BUILDING_TYPES:
    
@@ -402,7 +402,6 @@ class Datahandler():
                     building["dhwload"] = bldgs["dhwload"][bldgs["buildings_short"].index(building["buildingFeatures"]["building"])] * building["user"].nb_flats
             # Check if the building type is a supported non residential building. 
             elif building["buildingFeatures"]["building"] in NON_RESIDENTIAL_BUILDING_TYPES:
-                print("We are about to generate a Non Residential building.")
                  # If a an advanced model is presented, the number of floors and the height of the floors can be taken from the model file
                 if self.advancedModel is not None:
                     number_of_floors = model_data['storeys_above_ground'].values[
@@ -455,7 +454,7 @@ class Datahandler():
                 # 
                 # building["dhwload"] = bldgs["dhwload"][bldgs["buildings_short"].index(building["buildingFeatures"]["building"])] * building["user"].nb_flats
             elif building["buildingFeatures"]["building"] not in NON_RESIDENTIAL_BUILDING_TYPES and building["buildingFeatures"]["building"] not in RESIDENTIAL_BUILDING_TYPES:
-                print(f"The building type {building["buildingFeatures"]["building"]} is currently not supported. Please check the type of {building} and try again.")
+                print(f"The building type {building['buildingFeatures']['building']} is currently not supported. Please check the type of {building} and try again.")
             else:
                 raise AttributeError(f"The building type {building['buildingFeatures']['building']} is currently not supported. ")
 
