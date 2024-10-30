@@ -4,6 +4,9 @@ data/scenarios/*
 !data/scenarios/example_nrb.csv
 !data/scenarios/example_mix_used.csv
 !data/scenarios/info.txt
+2020_cleaned_reduce_area
+2021_reduced_area
+2022_reducearea
 errorfile.txt
 *.bk
 *.log
