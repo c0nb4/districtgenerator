@@ -7,6 +7,9 @@ data/scenarios/*
 2020_cleaned_reduce_area
 2021_reduced_area
 2022_reducearea
+20241030_2020_reduced_area
+20241030_2021_reduced_area
+20241030_2022_reduced_area
 errorfile.txt
 *.bk
 *.log
@@ -42,6 +45,7 @@ venv/
 2021
 2022
 full_simulation_updated_2020_reducedsize.ipynb
+full_simulation_updated_2021_reducedsize.ipynb
 full_simulation_updated_2021_reducedsize.ipynb
 full_simulation_updated_2021_reducedsize.ipynb
 full_simulation_updated_2022_reducedsize.ipynb
