@@ -251,7 +251,6 @@ class NonResidentialUsers():
             try: 
                 # To-Do: Check if data is series
                 # Units: electricity_values[equipment] in kWh/m2*a , self.area in m2
-                # Hier Fehler da 
                 annual_el_demand_temp = electricity_values[equipment] * self.area
                 appliance_full_usage_hours = self.appliance_schedule["APPLIANCES"].sum()
                 average_hourly_demand = annual_el_demand_temp / appliance_full_usage_hours
