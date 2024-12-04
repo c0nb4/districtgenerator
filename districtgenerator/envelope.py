@@ -735,7 +735,7 @@ class Envelope():
             # |      Heavy        |          3 * Af        |         260000 * Af                        |
             # |   Very Heavy      |        3.5 * Af        |         370000 * Af                        |
             # -----------------------------------------------------------------------------------------
-            # in City Energy Analyst german database the following values are chosen 
+            # in City Energy Analyst german database the following values are chosen in J/m2K
             # -----------------------------------------------------------------------------------------
             # |      Description       |         Code           |      Cm_Af                           |
             # -----------------------------------------------------------------------------------------
