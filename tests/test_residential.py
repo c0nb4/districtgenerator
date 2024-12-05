@@ -16,7 +16,7 @@ class TestResidential(unittest.TestCase):
             'id': [0, 1, 2, 3],
             'building': ["SFH", "SFH", "TH", "TH"],
             'year': [rd.randint(1900, 2024) for _ in range(4)],
-            'retrofit': [rd.randint(0 , 2 ) for _ in range(4)]
+            'retrofit': [rd.randint(0 , 2 ) for _ in range(4)],
             'area': [rd.randint(10, 100) for _ in range(4)]
         }
         df = pd.DataFrame(self.test_data, columns=self.test_data.keys())
