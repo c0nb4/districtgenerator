@@ -85,7 +85,7 @@ def _calculateNoHeat(self, zone, zoneParameters, zoneInputs, T_m_init, timestep=
     
     b[0] = Phi_m + H_tr_em * T_e + C_m * T_m_init / dt
     b[1] = Phi_st + H_tr_w * T_e
-    b[2] = Phi_ia + H_ve * T_sup
+    b[2] = Phi_ia + H_ve * T_sup 
 
     # Solve for "x"
     x = _solve(A, b)
@@ -99,7 +99,8 @@ def _calculateNoHeat(self, zone, zoneParameters, zoneInputs, T_m_init, timestep=
     return (T_op, T_m, T_i, T_s)
     
     
-def _calculateHeat(self, zone, zoneParameters, zoneInputs, T_m_init, T_set, timestep=0):
+def _calculateHeat(self, zone, zoneParameters, 
+                   zoneInputs, T_m_init, T_set, timestep=0):
     """
     Calculate the temperatures (Q_HC, T_op, T_m, T_air, T_s) that result when
     reaching a given set temperature T_set. 
@@ -201,7 +202,8 @@ def _calculateHeat(self, zone, zoneParameters, zoneInputs, T_m_init, T_set, time
     return (Q_HC, T_op, T_m, T_i, T_s)
    
    
-def calc(zoneParameters, zoneInputs, T_m_init, TCoolingSet, THeatingSet,
+def calc(zoneParameters, zoneInputs, T_m_init, TCoolingSet, THeatingSet, 
+         limitHeating=np.inf, limitCooling=-np.inf,
          beQuiet=False):
     """
     """
@@ -228,7 +230,8 @@ def calc(zoneParameters, zoneInputs, T_m_init, TCoolingSet, THeatingSet,
                                                   timestep=t)
         
         
-        ##Original
+        ## If the temperature is lower than the heating setpoint
+        ## Heating is needed
         
         if t_op < THeatingSet[t]:
             # Compute heat demand
@@ -237,6 +240,14 @@ def calc(zoneParameters, zoneInputs, T_m_init, TCoolingSet, THeatingSet,
                                                           t_previous, 
                                                           THeatingSet[t], 
                                                           timestep=t)
+            if q_hc > limitHeating:
+                q_hc = limitHeating
+                (t_op, t_m, t_i, t_s) = _calculateNoHeat(zoneParameters,
+                                                        zoneInputs, 
+                                                        t_previous,
+                                                        timestep=t)
+        
+                
         elif t_op > TCoolingSet[t]:
             # Compute cooling demand
             (q_hc, t_op, t_m, t_i, t_s) = _calculateHeat(zoneParameters,
@@ -244,6 +255,13 @@ def calc(zoneParameters, zoneInputs, T_m_init, TCoolingSet, THeatingSet,
                                                           t_previous, 
                                                           TCoolingSet[t], 
                                                           timestep=t)
+
+            if q_hc < limitCooling:
+                q_hc = limitCooling
+                (t_op, t_m, t_i, t_s) = _calculateNoHeat(zoneParameters,
+                                                        zoneInputs, 
+                                                        t_previous,
+                                                        timestep=t)
         else:
             # Nothing to do
             q_hc = 0
