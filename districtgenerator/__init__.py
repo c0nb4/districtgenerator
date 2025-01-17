@@ -4,3 +4,4 @@ from districtgenerator.solar import Sun
 from districtgenerator.users import Users
 from districtgenerator.profils import Profiles
 from districtgenerator.plots import DemandPlots
+__version__ = '0.0.1'
