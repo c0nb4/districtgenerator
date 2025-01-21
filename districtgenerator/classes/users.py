@@ -128,62 +128,34 @@ class Users:
         -------
         None.
         """
+        self.nb_occ = []
+        building_probs = {
+            "SFH": (0.245114, 0.402323, 0.154148, 0.148869, 0.049623),
+            "TH":  (0.236817, 0.400092, 0.157261, 0.154371, 0.051457),
+            "MFH": (0.490622, 0.307419, 0.101949, 0.074417, 0.024805),
+            "AB":  (0.490622, 0.307419, 0.101949, 0.074417, 0.024805),
+        }
+        probabilities = building_probs.get(self.building, building_probs["MFH"])
 
-        if self.building == "SFH":
-            # choose random number of occupants (1-5) for single family houses  (assumption)
-            probabilities = (0.245114, 0.402323, 0.154148, 0.148869, 0.049623) # Probabilities of having 1, 2, 3, 4 or 5 occupants in a single-family house, assuming a maximum of 5 occupants. Sources: https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-mietwohnungen.html and https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-eigentuemerwohnungen.html
-            # loop over all flats of current single family house
-            for k in range(self.nb_flats):
-                random_nb = rd.random()  # picking random number in [0,1)
-                j = 1  # staring with one occupant
-                # the random number decides how many occupants are chosen (1-5)
-                while j <= 5 :
-                    if random_nb < sum(probabilities[:j]) :
-                        self.nb_occ.append(j)  # minimum is 1 occupant
-                        break
-                    j += 1
+        # Build cumulative distribution
+        import random
+        cdf = []
+        cumul_sum = 0.0
+        for p in probabilities:
+            cumul_sum += p
+            cdf.append(cumul_sum)
 
-        elif self.building == "TH":
-            # choose random number of occupants (1-5) for terraced houses  (assumption)
-            probabilities = (0.236817, 0.400092, 0.157261, 0.154371, 0.051457) # Probabilities of having 1, 2, 3, 4 or 5 occupants in a terraced house, assuming a maximum of 4 occupants. Sources: https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-mietwohnungen.html and https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-eigentuemerwohnungen.html
-            # loop over all flats of current terraced house
-            for k in range(self.nb_flats):
-                random_nb = rd.random()  # picking random number in [0,1)
-                j = 1  # staring with one occupant
-                # the random number decides how many occupants are chosen (1-5)
-                while j <= 5 :
-                    if random_nb < sum(probabilities[:j]) :
-                        self.nb_occ.append(j)  # minimum is 1 occupant
-                        break
-                    j += 1
+        # Single pass for all flats
+        for _ in range(self.nb_flats):
+            r = random.random()
+            occupant = 1
+            # Find the index where r fits into the cumulative distribution
+            for idx, threshold in enumerate(cdf):
+                if r < threshold:
+                    occupant = idx + 1  # occupant is 1-based
+                    break
+            self.nb_occ.append(occupant)
 
-        elif self.building == "MFH":
-            # choose random number of occupants (1-5) for each flat in the multi family house  (assumption)
-            probabilities = (0.490622, 0.307419, 0.101949, 0.074417, 0.024805) # Probabilities of having 1, 2, 3, 4 or 5 occupants in a flat, assuming a maximum of 4 occupants. Sources: https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-mietwohnungen.html and https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-eigentuemerwohnungen.html
-            # loop over all flats of current multi family house
-            for k in range(self.nb_flats):
-                random_nb = rd.random()  # picking random number in [0,1)
-                j = 1  # staring with one occupant
-                # the random number decides how many occupants are chosen (1-5)
-                while j <= 5 :
-                    if random_nb < sum(probabilities[:j]) :
-                        self.nb_occ.append(j)  # minimum is 1 occupant
-                        break
-                    j += 1
-
-        elif self.building == "AB":
-            # choose random number of occupants (1-5) for each flat in the apartment block  (assumption)
-            probabilities = (0.490622, 0.307419, 0.101949, 0.074417, 0.024805) # Probabilities of having 1, 2, 3, 4 or 5 occupants in a flat, assuming a maximum of 4 occupants. Sources: https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-mietwohnungen.html and https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Wohnen/Tabellen/tabelle-wo2-eigentuemerwohnungen.html
-            # loop over all flats of current apartment block
-            for k in range(self.nb_flats):
-                random_nb = rd.random()  # picking random number in [0,1)
-                j = 1  # staring with one occupant
-                # the random number decides how many occupants are chosen (1-5)
-                while j <= 5 :
-                    if random_nb < sum(probabilities[:j]) :
-                        self.nb_occ.append(j)  # minimum is 1 occupant
-                        break
-                    j += 1
 
 
     def generate_annual_el_consumption(self):
@@ -254,6 +226,8 @@ class Users:
                             # A random integer is selected as the current demand, which must lie between the two values determined by the first random number
                             break
                         i += 1
+
+                        
     def generate_lighting_index(self, area):
         """
         Choose a random lighting index between 0 and 99 for the residential buildings.
