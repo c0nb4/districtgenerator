@@ -8,12 +8,18 @@ def getEpwWeather(file_path:str) -> pd.DataFrame:
 
     Information about epw files:
     https://bigladdersoftware.com/epx/docs/8-3/auxiliary-programs/energyplus-weather-file-epw-data-dictionary.html#field-dry-bulb-temperature 
-    Returns:
-    weather: pandas dataframe  with the columns: 
-        - DirNormRad
-        - DiffHorRad
-        - DryBulbTemp
-    Index is a timestamp in the yyyy-mm-dd-hh format. 
+     Returns:
+    --------
+    weather: pandas.DataFrame with columns:
+        - Direct Normal Radiation
+        - Diffuse Horizontal Radiation
+        - Dry Bulb Temperature
+        - Direct Normal Illuminance
+        - Diffuse Horizontal Illuminance
+        - Wind Speed
+        
+    The index will be a default integer index after removal of leap-day rows if found.
+
     """
 
     # Define the column names as per EPW file documentation
@@ -31,19 +37,32 @@ def getEpwWeather(file_path:str) -> pd.DataFrame:
                  "Days Since Last Snowfall", "Albedo", "Liquid Precipitation Depth", 
                  "Liquid Precipitation Quantity"]
     
-    # Load the file
+     # Load the file, skipping the first 8 header lines
     df = pd.read_csv(file_path, skiprows=8, header=None, names=col_names)
     
-    # Creating a timestamp column in the required format
+
     df['Timestamp'] = pd.to_datetime(df[['Year', 'Month', 'Day', 'Hour']]) - pd.Timedelta(hours=1)
-    
-    # Adjust the minute and second to 00:00, as EPW files do not contain this information
-    #df['Timestamp'] = df['Timestamp'].dt.strftime('%Y-%m-%d-%H-00-00')
-    
-    # Select the required columns
-    df = df[['Timestamp', 'Direct Normal Radiation', 'Diffuse Horizontal Radiation', 'Dry Bulb Temperature', 
-              "Direct Normal Illuminance",  "Diffuse Horizontal Illuminance", "Wind Speed"]]
-    
+
+    df = df[
+        [
+            'Timestamp',
+            'Direct Normal Radiation',
+            'Diffuse Horizontal Radiation',
+            'Dry Bulb Temperature',
+            'Direct Normal Illuminance',
+            'Diffuse Horizontal Illuminance',
+            'Wind Speed'
+        ]
+    ]
+
+    # Check if there is any Feb 29 data (i.e., leap-day data)
+    mask_feb29 = (df['Timestamp'].dt.month == 2) & (df['Timestamp'].dt.day == 29)
+    if mask_feb29.any():
+        # Remove the leap-day rows
+        df = df.loc[~mask_feb29]
+
+    df.reset_index(drop=True, inplace=True)
+
     return df
 
 def getTryWeather(file_path: str) -> pd.DataFrame:
