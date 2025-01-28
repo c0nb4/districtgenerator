@@ -16,11 +16,11 @@ def extract_surface_areas(building_data):
     Returns:
         tuple: Two dictionaries containing:
             - free_areas: Free wall areas grouped by cardinal direction (N,S,E,W)
-            - opaque_areas: Total wall areas grouped by cardinal direction (N,S,E,W)
+            - connected_areas: Total wall areas grouped by cardinal direction (N,S,E,W)
     """
     # Initialize dictionaries to store areas by direction
     free_areas = {'north': 0, 'south': 0, 'east': 0, 'west': 0}
-    opaque_areas = {'north': 0, 'south': 0, 'east': 0, 'west': 0}
+    connected_areas = {'north': 0, 'south': 0, 'east': 0, 'west': 0}
     
     # Process each surface orientation
     for key, value in building_data.items():
@@ -49,18 +49,18 @@ def extract_surface_areas(building_data):
             
         # Add areas to corresponding direction
         free_areas[direction] += value.get('free_wall_area', 0)
-        opaque_areas[direction] += value.get('connected_wall_area', 0)
+        connected_areas[direction] += value.get('connected_wall_area', 0)
         
-    return free_areas, opaque_areas
+    return free_areas, connected_areas
 
 
-def extract_window_areas(free_areas, opaque_areas, building_data):
+def extract_window_areas(free_areas, connected_areas, building_data):
     """
     Extract window areas per direction from building geometry data.
     
     Args:
         free_areas (dict): Dictionary containing free wall areas by direction (north,south,east,west)
-        opaque_areas (dict): Dictionary containing total opaque wall areas by direction (north,south,east,west)
+        connected_areas (dict): Dictionary containing total opaque wall areas by direction (north,south,east,west)
         building_data (Envelope): Envelope object containing the building data 
          with orientation angles and surface areas from the archetypes
         
@@ -73,7 +73,7 @@ def extract_window_areas(free_areas, opaque_areas, building_data):
     for direction in updated_window_areas:
         free_area = free_areas[direction]
         if free_area > 0:
-            window_area = ( free_area /  ( opaque_areas[direction] + free_area ) ) * building_data["envelope"].A["window"][direction]
+            window_area = ( free_area /  ( connected_areas[direction] + free_area ) ) * building_data["envelope"].A["window"][direction]
             updated_window_areas[direction] = min(window_area, free_area)
         else:
             updated_window_areas[direction] = 0

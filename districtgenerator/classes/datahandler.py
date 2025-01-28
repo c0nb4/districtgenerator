@@ -1167,7 +1167,7 @@ class Datahandler:
             retrofit_level = building["buildingFeatures"]["retrofit"]
             
             envelope_obj = building["envelope"]
-            envelope_dict = vars(self.district[i]["envelope"])
+            envelope_dict = vars(envelope_obj)
             user_dict = vars(self.district[i]["user"])
 
             building_dict = {
@@ -1241,33 +1241,29 @@ class Datahandler:
             if building_data is None:
                 print(f"No data found for building ID {building_id} in advanced model")
                 continue
-            free_areas, opaque_areas = update_surfaces.extract_surface_areas(building_data)
-            window_areas = update_surfaces.extract_window_areas(free_areas, opaque_areas, building)
+            free_areas, connected_areas = update_surfaces.extract_surface_areas(building_data)
+            window_areas = update_surfaces.extract_window_areas(free_areas, connected_areas, building)
 
             # Calculate total window area
             total_window_area = sum(window_areas.values())
 
             # Update window areas with validation
-            building["envelope"].A["window"] = {
-                "south": window_areas.get("south", building["envelope"].A["window"]["south"]),
-                "north": window_areas.get("north", building["envelope"].A["window"]["north"]),
-                "west": window_areas.get("west", building["envelope"].A["window"]["west"]),
-                "east": window_areas.get("east", building["envelope"].A["window"]["east"]),
-                "sum": total_window_area
-            }
+            building["envelope"].A["window"]["south"] = window_areas.get("south", building["envelope"].A["window"]["south"])
+            building["envelope"].A["window"]["north"] = window_areas.get("north", building["envelope"].A["window"]["north"]) 
+            building["envelope"].A["window"]["west"] = window_areas.get("west", building["envelope"].A["window"]["west"])
+            building["envelope"].A["window"]["east"] = window_areas.get("east", building["envelope"].A["window"]["east"])
+            building["envelope"].A["window"]["sum"] = total_window_area
 
             # Calculate total internal wall area including connected walls
-            total_opaque_area = sum(opaque_areas.values())
+            total_connected_wall_area = sum(connected_areas.values())
             internal_wall_area = building["envelope"].A["opaque"].get("intWall", 0)
-            total_internal_area = internal_wall_area + total_opaque_area
+            total_internal_area = internal_wall_area + total_connected_wall_area
 
             # Update opaque areas with validation
-            building["envelope"].A["opaque"] = {
-                "south": max(0, opaque_areas.get("south", 0)),
-                "north": max(0, opaque_areas.get("north", 0)),
-                "west": max(0, opaque_areas.get("west", 0)), 
-                "east": max(0, opaque_areas.get("east", 0)),
-                "roof": building["envelope"].A["opaque"].get("roof", 0),  # Preserve existing roof area
-                "floor": building["envelope"].A["opaque"].get("floor", 0),  # Preserve existing floor area
-                "intWall": max(0, total_internal_area)
-            }
+            building["envelope"].A["opaque"]["south"] = max(0, free_areas.get("south", 0))
+            building["envelope"].A["opaque"]["north"] = max(0, free_areas.get("north", 0))
+            building["envelope"].A["opaque"]["west"] = max(0, free_areas.get("west", 0))
+            building["envelope"].A["opaque"]["east"] = max(0, free_areas.get("east", 0))
+            building["envelope"].A["opaque"]["roof"] = building["envelope"].A["opaque"].get("roof", 0)  # Preserve existing roof area
+            building["envelope"].A["opaque"]["floor"] = building["envelope"].A["opaque"].get("floor", 0)  # Preserve existing floor area
+            building["envelope"].A["opaque"]["intWall"] = max(0, total_internal_area)
