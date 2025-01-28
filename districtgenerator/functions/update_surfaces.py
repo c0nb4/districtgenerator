@@ -38,14 +38,13 @@ def extract_surface_areas(building_data):
         angle = angle % 360
         
         # Determine cardinal direction based on angle
-        # TODO check Teaser data model
         if 315 <= angle or angle < 45:
-            direction = 'north'
-        elif 45 <= angle < 135:
-            direction = 'east'
-        elif 135 <= angle < 225:
             direction = 'south'
-        else:  # 225 <= angle < 315
+        elif 135 <= angle < 225:
+            direction = 'north'
+        elif 225 <= angle < 315:
+            direction = 'east'
+        else:  # 45 <= angle < 135
             direction = 'west'
             
         # Add areas to corresponding direction
@@ -74,9 +73,9 @@ def extract_window_areas(free_areas, opaque_areas, building_data):
     for direction in updated_window_areas:
         free_area = free_areas[direction]
         if free_area > 0:
-            # Calculate window area as percentage of free wall area
-            window_area = ( free_area /  ( opaque_areas[direction] + free_area ) ) * building_data[direction]
-            # Ensure window area doesn't exceed free wall area
+            window_area = ( free_area /  ( opaque_areas[direction] + free_area ) ) * building_data["envelope"].A["window"][direction]
             updated_window_areas[direction] = min(window_area, free_area)
+        else:
+            updated_window_areas[direction] = 0
             
     return updated_window_areas

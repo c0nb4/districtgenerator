@@ -27,6 +27,7 @@ from .non_residential_users import NonResidentialUsers
 from ..functions import weather_handling as weather_handling
 from ..functions import path_checks as path_checks 
 from ..functions import calculate_holidays as calculate_holidays
+from ..functions import update_surfaces as update_surfaces
 
 
 RESIDENTIAL_BUILDING_TYPES = ["SFH", "TH", "MFH", "AB"]
@@ -153,17 +154,19 @@ class Datahandler:
                 new_path = path_checks.check_path(new_path)
             self.resultPath = new_path 
     
-    def setAdvancedModel(self, pathAdvancedModel=None):
+    def setAdvancedModel(self, pathAdvancedModel: str) -> None:
             """
-            Sets the path and loads data for advanded modelling
+            Sets the path and loads data for advanded modelling. This includes geometry.
 
             Args:
-                new_path (str, optional): The new path to set. If not provided, the default path will be used.
+                pathAdvancedModel (str): The path to the advanced model JSON file that contains 
+                    further attributes about geometry in TEASER coordinates.
 
             Returns:
                 None
             """
-            self.advancedModel = pathAdvancedModel if pathAdvancedModel is not None else None
+            with open(pathAdvancedModel, 'r') as f:
+                self.advancedModel_data = json.load(f)
 
     def setWeatherFile(self, pathWeatherFile=None):
             """
@@ -1212,5 +1215,59 @@ class Datahandler:
         """
         Import building data from a csv file
         """
-        # TODO: Implement this function to load advanced building data
+        # TODO Implement this function to load advanced building data
         pass
+
+
+    def updateGeometry(self):
+        """
+        Update building data from the advanced model.
+        Updates envelope data for each building based on the advanced model data.
+       
+        Update building data from the advanced model.
+        Updates envelope data for each building based on the advanced model data.
+        """
+        if self.advancedModel_data is None:
+            print("No geometry model provided. Cannot update building data.")
+            return
+
+        # Update each building's envelope data
+        for building in self.district:
+            building_id = building["buildingFeatures"]["gml_id"]
+            
+            # Find matching building data in advanced model
+            building_data = self.advancedModel_data.get(building_id)
+            
+            if building_data is None:
+                print(f"No data found for building ID {building_id} in advanced model")
+                continue
+            free_areas, opaque_areas = update_surfaces.extract_surface_areas(building_data)
+            window_areas = update_surfaces.extract_window_areas(free_areas, opaque_areas, building)
+
+            # Calculate total window area
+            total_window_area = sum(window_areas.values())
+
+            # Update window areas with validation
+            building["envelope"].A["window"] = {
+                "south": window_areas.get("south", building["envelope"].A["window"]["south"]),
+                "north": window_areas.get("north", building["envelope"].A["window"]["north"]),
+                "west": window_areas.get("west", building["envelope"].A["window"]["west"]),
+                "east": window_areas.get("east", building["envelope"].A["window"]["east"]),
+                "sum": total_window_area
+            }
+
+            # Calculate total internal wall area including connected walls
+            total_opaque_area = sum(opaque_areas.values())
+            internal_wall_area = building["envelope"].A["opaque"].get("intWall", 0)
+            total_internal_area = internal_wall_area + total_opaque_area
+
+            # Update opaque areas with validation
+            building["envelope"].A["opaque"] = {
+                "south": max(0, opaque_areas.get("south", 0)),
+                "north": max(0, opaque_areas.get("north", 0)),
+                "west": max(0, opaque_areas.get("west", 0)), 
+                "east": max(0, opaque_areas.get("east", 0)),
+                "roof": building["envelope"].A["opaque"].get("roof", 0),  # Preserve existing roof area
+                "floor": building["envelope"].A["opaque"].get("floor", 0),  # Preserve existing floor area
+                "intWall": max(0, total_internal_area)
+            }
