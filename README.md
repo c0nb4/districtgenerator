@@ -1,9 +1,9 @@
 ![E.ON EBC RWTH Aachen University](./img/EBC_Logo.png)
+![DVG TU Berlin](./img/DVG_Logo.png)
 
 # DistrictGenerator
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
-[![Documentation](https://rwth-ebc.github.io/FiLiP/master/docs/doc.svg)](https://rwth-ebc.github.io/FiLiP/master/docs/index.html)
 
 The districtgenerator is a Python tool for generating building-specific thermal, electrical and occupancy profiles for districts. 
 By integrating several open-source data bases and tools like [TEASER](https://github.com/RWTH-EBC/TEASER) and 
@@ -74,11 +74,6 @@ The minimal input data set was defined following the [TABULA archetype approach]
 * _retrofit_: retrofit state according to TABULA (0: existing state, 1: usual refurbishment, 2: advanced refurbishment)
 * _area_: reference floor area (given in square meters)
 
-- id: building ID (just numerate the buildings)
-- building: residential building type (single family house, terraced house, multi family house or apartment block)
-- year: construction year (the calendar year in which the building was constructed)
-- retrofit: retrofit state according to TABULA (0: existing state, 1: usual refurbishment, 2: advanced refurbishment)
-- area: reference floor area (given in square meters)
 
 The example.csv file can be used as [template](../districtgenerator/data/scenarios/example.csv).
 
