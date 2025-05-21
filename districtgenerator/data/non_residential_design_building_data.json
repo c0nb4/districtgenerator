@@ -1,34 +1,36 @@
 {
 "IWU Hotels, Boarding, Restaurants or Catering": {
-    "T_set_min": 20.8,
-    "T_set_min_night": 18.0,
+    "T_set_min": 21.0,
+    "T_set_min_night": 18.3,
     "T_set_max": 24.0,
-    "T_set_max_night": 28.0,
+    "T_set_max_night": 26.7,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
     "ventilation_rate": 0.5
+
 },
 "IWU Office, Administrative or Government Buildings": {
     "T_set_min": 20.8,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 16.9,
     "T_set_max": 24.0,
-    "T_set_max_night": 28.0,
+    "T_set_max_night": 27.9,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
     "ventilation_rate": 0.5
 },
 "IWU Trade Buildings": {
     "T_set_min": 20.8,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 16.9,
     "T_set_max": 24.0,
-    "T_set_max_night": 28.0,
+    "T_set_max_night": 27.9,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
     "ventilation_rate": 0.5
+
 },
 "IWU Technical and Utility (supply and disposal)": {
     "T_set_min": 21.0,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 17.0,
     "T_set_max": 24.0,
     "T_set_max_night": 28.0,
     "T_bivalent": -2.0,
@@ -37,7 +39,7 @@
 },
 "IWU School, Day Nursery and other Care": {
     "T_set_min": 21.0,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 17.0,
     "T_set_max": 24.0,
     "T_set_max_night": 28.0,
     "T_bivalent": -2.0,
@@ -46,7 +48,7 @@
 },
 "IWU Transport": {
     "T_set_min": 21.0,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 17.0,
     "T_set_max": 24.0,
     "T_set_max_night": 28.0,
     "T_bivalent": -2.0,
@@ -55,17 +57,17 @@
 },
 "IWU Health and Care": {
     "T_set_min": 21.5,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 18.6,
     "T_set_max": 24.0,
-    "T_set_max_night": 28.0,
+    "T_set_max_night": 26.9,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
     "ventilation_rate": 0.5
 },
 "IWU Sports Facilities": {
-    "T_set_min": 20.0,
-    "T_set_min_night": 18.0,
-    "T_set_max": 26.0,
+    "T_set_min": 20.1,
+    "T_set_min_night": 16.2,
+    "T_set_max": 24.1,
     "T_set_max_night": 28.0,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
@@ -73,7 +75,7 @@
 },
 "IWU Culture and Leisure": {
     "T_set_min": 21.0,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 17.0,
     "T_set_max": 24.0,
     "T_set_max_night": 28.0,
     "T_bivalent": -2.0,
@@ -100,18 +102,18 @@
 },
 "IWU Generalized (2) Production buildings": {
     "T_set_min": 15.1,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 13.5,
     "T_set_max": 25.4,
-    "T_set_max_night": 28.0,
+    "T_set_max_night": 27.0,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
     "ventilation_rate": 0.5
 },
 "IWU Production, Workshop, Warehouse or Operations": {
     "T_set_min": 15.1,
-    "T_set_min_night": 18.0,
+    "T_set_min_night": 13.5,
     "T_set_max": 25.4,
-    "T_set_max_night": 28.0,
+    "T_set_max_night": 27.0,
     "T_bivalent": -2.0,
     "T_heatlimit": 15.0,
     "ventilation_rate": 0.5

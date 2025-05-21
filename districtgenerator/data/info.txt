@@ -30,6 +30,8 @@ The data folder contains essential information for simulating mixed-use district
 4. multi_zone_average:
    Contains Non-domestic-multi-zone-average-usage-profiles-for-Germany.csv, providing average usage profiles for non-residential buildings.
    Data obtained from IWU:  https://github.com/IWUGERMANY/Non-domestic-multi-zone-average-usage-profiles-for-Germany 
+  
+
 
 5. weather:
    Stores weather data files (e.g., EPW files) used for simulations.
@@ -45,6 +47,8 @@ The data folder contains essential information for simulating mixed-use district
 8. non_residential_design_building_data.json:
    Contains design data for non-residential buildings.
    Data is obtained from: https://github.com/IWUGERMANY/Non-domestic-multi-zone-average-usage-profiles-for-Germany for heating and cooling limits. 
+   For the reduced heating set point temperature the set point temperature is reduced by deltaTheta_i_NA. 
+   For the increased cooling set point temperature the set point temperature is increased by deltaTheta_i_NA. 
 
 
 This structure allows for flexible and comprehensive modeling of various building types and their characteristics, enabling accurate simulation of mixed-use districts.
